@@ -1,34 +1,3 @@
-#!/usr/bin/env python3
-"""
-run_study.py -- the experiment. Every step states what it tests and why.
-
-MODELS UNDER TEST (both, so the target class is a controlled variable)
----------------------------------------------------------------------
-  WEIGHTED  the mission-time reliability model: N=8 components with
-            capacities c = [8,8,8,8,4,4,4,4], failure when total capacity
-            drops below C_min = 12. THIS IS THE MODEL OF RECORD -- results
-            reported for it are the ones that carry to the application.
-  KOFN      k-out-of-n with k = 4. A maximally symmetric control, included
-            ONLY to show what changes when the target loses its asymmetric
-            structure. It is NOT the applied model.
-
-The distinction matters because it changes the target class. Under the
-weighted rule h_s depends on the group composition (how many capacity-8 and
-how many capacity-4 components are up), so it takes more distinct values;
-under k-out-of-n it depends on Hamming weight alone. That is the single most
-important covariate in this study.
-
-STEPS
------
-  0  Correctness gates.
-  1  Ceiling: exact h-transform, variance 0.
-  2  Strong classical baseline: EXACT optimum of the odds-ratio tilt family.
-  3  Target-class characterisation: how many distinct values does h_s take?
-  4  Born-machine circuits: 3 clock encodings x 2 symmetry sectors.
-  5  Hybrid dressed circuit (Mari et al. 2020), architecture-matched to the MLP.
-  6  Classical MLP control, matched parameter budget.
-  7  Summary.
-"""
 import json, time
 import numpy as np
 from src.qht import (Chain, exact_variance, kernel_from_g, VQCProposal, MLP,

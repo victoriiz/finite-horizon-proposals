@@ -1,7 +1,3 @@
-"""
-finish.py -- completes the two runs the conclusion rests on.
-Writes incrementally so a killed process still leaves usable results.
-"""
 import numpy as np, json, os, sys
 from src.qht import Chain, MLP
 from src.hybrid import DressedCircuit

@@ -1,66 +1,10 @@
-#!/usr/bin/env python3
-"""
-qht.py -- Learning the time-inhomogeneous h-transform with variational circuits.
-
-WHAT THIS STUDIES
------------------
-For a finite-horizon hitting problem, the zero-variance importance-sampling
-proposal is the Doob h-transform
-
-    Q*_s(x -> y)  proportional to  P(x,y) * g_{s-1}(y),
-    g_s(y) = 1 if y in F else h_s(y),
-    h_s(y) = P(hit F within s more steps | at y).
-
-h_s carries a CLOCK: it depends on steps remaining.  Every learned-proposal
-method in the literature learns a committor q(x) -- a function of state ALONE,
-with no time argument (Khoo/Lu/Ying arXiv:1802.10275; Li/Lin/Ren JCP 151:054112;
-Khoo et al. PMLR 145; NeurIPS 2024 arXiv:2405.17638).  A stationary committor
-carries no clock, so the finite-horizon object has never been learned.
-
-This module learns h_s(x) with a variational quantum circuit (Born machine),
-compares three ways of encoding the clock, and scores every proposal by its
-EXACT variance -- computed by backward recursion, never by sampling.
-
-WHY EVERYTHING IS EXACT
------------------------
-State space is enumerable, so we compute:
-  * h_s(x) and p_T exactly (backward DP),
-  * the variance of ANY proposal exactly (second-moment recursion),
-  * the classical tilt family's exact optimum (1-D optimisation over exact
-    variance, not over a sampled estimate).
-No Monte Carlo appears anywhere.  Results are deterministic.
-
-TRAINING IS SUPERVISED ON EXACT TARGETS -- DELIBERATELY
--------------------------------------------------------
-We hand the learner the exact h_s as its target.  That is the BEST CASE: no
-training scheme operating from samples can do better than one handed the answer.
-So attained performance here UPPER-BOUNDS what any practical training scheme
-could reach, and separates the REPRESENTATION question ("can this circuit
-express h_s?") from the OPTIMISATION question ("can we find it from data?").
-A circuit that fails with exact supervision fails, full stop.
-
-Gradients use the parameter-shift rule (Mitarai et al. PRA 98:032309;
-Schuld et al. PRA 99:032331).  NOTE: parameter shift DOES apply here even
-though the loss is a KL divergence, because each outcome probability
-p(y)=|<y|psi>|^2 is the expectation of the projector |y><y|, and
-dKL/dtheta = -sum_y h(y)/p(y) * dp(y)/dtheta.
-
-PROVENANCE
-----------
-The chain, the backward DP and the second-moment recursion follow
-github.com/victoriiz/mission-time-reliability (model.py, ceiling.py).
-Re-implemented here standalone so this project has no cross-repo dependency.
-
-Requires numpy only.
-"""
-
 from __future__ import annotations
 import math
 from dataclasses import dataclass
 import numpy as np
 
 # =====================================================================
-# 1. CHAIN -- state space, kernel, exact h_s, exact p_T
+# 1. CHAIN 
 # =====================================================================
 
 @dataclass
