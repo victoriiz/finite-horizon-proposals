@@ -1,3 +1,6 @@
+"""
+make_figures.py: three figures built from the saved result JSONs.
+"""
 import json
 import numpy as np
 import os
@@ -148,5 +151,62 @@ def fig_capacity():
     print(f"wrote {FIGURES}/fig_capacity.pdf")
 
 
+
+
+# ---------------------------------------------------------------- Figure 4
+def fig_noise():
+    """
+    Finite-shot readout. The classical regressor is a flat reference because
+    it has no readout channel at all. The two quantum architectures differ
+    qualitatively: the dressed circuit reads n_q expectations and is stable
+    from 100 shots upward, while the Born machine must reconstruct a
+    distribution over 2^n states and collapses below roughly 10^4 shots.
+    """
+    d = json.load(open(os.path.join(RESULTS, "results_noise.json")))
+    mlp = d["mlp_exact_vrf"]
+    # Only the endpoints of the depolarising range are plotted. The
+    # intermediate rate adds a third pair of near-identical curves without
+    # adding information, and is reported in the table instead.
+    lams = [0.0, 0.05]
+    xs_all = [100, 1000, 10_000, 100_000]
+    xlab = ["$10^2$", "$10^3$", "$10^4$", "$10^5$", "exact"]
+    xpos = [1, 2, 3, 4, 5]
+
+    fig, ax = plt.subplots(figsize=(6.6, 3.0))
+    styles = {0.0: "-", 0.05: (0, (2, 1.6))}
+    for lam in lams:
+        by = {r["shots"]: r for r in d["rows"] if r["lam"] == lam}
+        hy = [by[s]["hybrid_med"] for s in xs_all] + [by[None]["hybrid_med"]]
+        bo = [by[s]["born_med"] for s in xs_all] + [by[None]["born_med"]]
+        tag = "noiseless" if lam == 0 else "$\\lambda=0.05$"
+        ax.plot(xpos, hy, ls=styles[lam], marker="s", color=ORANGE, lw=1.9, ms=5,
+                label=f"hybrid dressed circuit, {tag}", zorder=4)
+        ax.plot(xpos, np.maximum(bo, 1.2e-2), ls=styles[lam], marker="o",
+                color=INK, lw=1.5, ms=4.5, label=f"Born machine, {tag}", zorder=3)
+
+    ax.axhline(mlp, color=BLUE, lw=2.2, zorder=2)
+    ax.annotate(f"classical MLP, no readout channel ({mlp:,.0f})",
+                (1.05, mlp), color=BLUE, fontsize=8, va="bottom", ha="left")
+    ax.axhline(1.0, color=MUTED, lw=0.8, ls=(0, (4, 3)), zorder=1)
+    ax.annotate("naive Monte Carlo", (1.05, 1.0), fontsize=7.5, color=MUTED,
+                va="bottom", ha="left")
+    ax.annotate("no usable proposal\nbelow $10^4$ shots", (1.5, 0.016),
+                fontsize=8, color=INK, ha="center", va="bottom")
+
+    ax.set_yscale("log")
+    ax.set_ylim(1.0e-2, 4e3)
+    ax.set_xlim(0.8, 5.4)
+    ax.set_xticks(xpos); ax.set_xticklabels(xlab)
+    ax.set_xlabel("measurement shots used to reconstruct the proposal")
+    ax.set_ylabel("variance reduction factor")
+    ax.grid(True, axis="y", which="major", color=GRID, lw=0.5, zorder=0)
+    ax.set_axisbelow(True)
+    ax.legend(frameon=False, fontsize=7.5, loc="lower right", ncol=1,
+              borderaxespad=0.6)
+    fig.tight_layout()
+    fig.savefig(os.path.join(FIGURES, "fig_noise.pdf"), bbox_inches="tight")
+    print(f"wrote {FIGURES}/fig_noise.pdf")
+
+
 if __name__ == "__main__":
-    fig_rarity(); fig_seeds(); fig_capacity()
+    fig_rarity(); fig_seeds(); fig_capacity(); fig_noise()

@@ -1,8 +1,18 @@
+#!/usr/bin/env python3
+"""
+run_study.py: the experiment.
+"""
 import json, time
 import numpy as np
-from src.qht import (Chain, exact_variance, kernel_from_g, VQCProposal, MLP,
+import os
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS = os.path.join(_ROOT, "results")
+FIGURES = os.path.join(_ROOT, "figures")
+os.makedirs(RESULTS, exist_ok=True); os.makedirs(FIGURES, exist_ok=True)
+
+from qht import (Chain, exact_variance, kernel_from_g, VQCProposal, MLP,
                  tilt_family_optimum)
-from src.hybrid import DressedCircuit
+from hybrid import DressedCircuit
 
 RULE = "-" * 88
 
@@ -267,9 +277,9 @@ def main():
     out["kofn"] = run_model("K-OUT-OF-N (symmetric control, not the applied model)",
                             kofn, T)
 
-    with open("results_main.json", "w") as f:
+    with open(os.path.join(RESULTS, "results_main.json"), "w") as f:
         json.dump(dict(config=CFG, models=out), f, indent=2, default=float)
-    print("\nwrote results_main.json")
+    print(f"\nwrote {RESULTS}/results_main.json")
 
 
 if __name__ == "__main__":

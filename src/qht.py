@@ -1,10 +1,15 @@
+#!/usr/bin/env python3
+"""
+qht.py: Learning the time-inhomogeneous h-transform with variational circuits.
+"""
+
 from __future__ import annotations
 import math
 from dataclasses import dataclass
 import numpy as np
 
 # =====================================================================
-# 1. CHAIN 
+# 1. CHAIN -- state space, kernel, exact h_s, exact p_T
 # =====================================================================
 
 @dataclass
@@ -28,6 +33,19 @@ class Chain:
     b0: float = 0.284
     gamma: float = 0.30
     eta: float = 0.50
+    rate_law: str = "cascade"
+    # "cascade"  -- the overload-cascade / repair-congestion form of the
+    #               mission-time reliability report:
+    #                   a(x) = min(1, a0 + gamma * (C_nom/C(x) - 1)^+)
+    #                   b(x) = b0 / (1 + eta * k)
+    #               Failure responds to LOST CAPACITY, repair to a shared
+    #               repair queue. Reproduces the report's p_T at every T.
+    # "exponent" -- the earlier form used in the first draft of this study:
+    #                   a(x) = a0^(1 - gamma*k),  b(x) = b0^(1 + eta*k/n)
+    #               Retained only to reproduce those numbers. It saturates:
+    #               with gamma = 0.30 the exponent turns non-positive at
+    #               k >= 4, so a is clipped to 1 and every surviving
+    #               component fails with certainty on the next step.
 
     def __post_init__(self):
         n = self.n
@@ -45,8 +63,26 @@ class Chain:
 
     def _rates(self):
         k = self.n - self.up                     # components down
-        a = np.clip(self.a0 ** np.maximum(1e-6, 1.0 - self.gamma * k), 0, 1)
-        b = np.clip(self.b0 ** (1.0 + self.eta * k / self.n), 0, 1)
+        if self.rate_law == "exponent":
+            a = np.clip(self.a0 ** np.maximum(1e-6, 1.0 - self.gamma * k), 0, 1)
+            b = np.clip(self.b0 ** (1.0 + self.eta * k / self.n), 0, 1)
+            return a, b
+        if self.rate_law != "cascade":
+            raise ValueError(f"unknown rate_law {self.rate_law!r}")
+        # Overload cascade: surviving components carry the load of the lost
+        # capacity, so the failure rate rises with the capacity deficit.
+        if self.caps is not None:
+            C = self.bits @ self.caps
+            C_nom = float(self.caps.sum())
+        else:
+            # k-out-of-n control: unit capacities, so C(x) is the up-count.
+            C = self.up.astype(float)
+            C_nom = float(self.n)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            deficit = np.where(C > 0, C_nom / np.maximum(C, 1e-300) - 1.0, np.inf)
+        a = np.clip(self.a0 + self.gamma * np.maximum(deficit, 0.0), 0.0, 1.0)
+        # Repair congestion: a shared repair resource serves k down components.
+        b = self.b0 / (1.0 + self.eta * k)
         return a, b
 
     def _kernel(self):
@@ -141,6 +177,13 @@ def kernel_from_g(chain: Chain, g, eps=1e-3):
 # =====================================================================
 # 3. STATEVECTOR BORN MACHINE + PARAMETER-SHIFT GRADIENTS
 # =====================================================================
+#
+# Ansatz: L layers of [RY(theta) on every qubit] then a CZ ring.
+# RY and CZ are real, so the statevector stays real -- we use float64.
+# Any probability vector is |sqrt(p)|^2 with real non-negative amplitudes,
+# so restricting to real amplitudes costs no expressivity in the target,
+# only in the reachable paths through Hilbert space.  Stated as a design
+# choice, not hidden.
 
 def _apply_ry(psi, n, q, ang):
     c, s = math.cos(ang / 2), math.sin(ang / 2)
@@ -195,7 +238,8 @@ def kl_and_grad(theta, target, n, L, cz):
 # 4. TIME ENCODINGS -- the actual design question
 # =====================================================================
 #
-# How does a circuit read "how many steps are left"? 
+# How does a circuit read "how many steps are left"?  Three candidates,
+# all trained on the same exact targets with the same budget.
 #
 #   PER_S   separate parameter block per horizon s.  Most parameters,
 #           no sharing, an upper bound on what this ansatz family can do.

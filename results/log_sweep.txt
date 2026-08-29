@@ -1,0 +1,32 @@
+
+=== WEIGHTED   p_T=2.0791e-03 ===
+model                    params          VRF        KL
+MLP hidden=4                 45        51.42    0.0003
+MLP hidden=6                 67        90.07    0.0006
+MLP hidden=8                 89       130.40    0.0031
+MLP hidden=12               133        47.02    0.0003
+MLP hidden=16               177        62.17    0.0002
+MLP hidden=24               265        72.60    0.0002
+hybrid nq3L2                 40        28.14    0.0115
+hybrid nq4L2                 53        40.58    0.0372
+hybrid nq4L3                 57        79.83    0.0141
+hybrid nq6L2                 79        33.01    0.0040
+  BEST MLP    hidden=8 seed=1 params=89 VRF=130.40 KL=0.0031
+  BEST HYBRID nq4L3 seed=0 params=57 VRF=79.83 KL=0.0141
+
+=== KOFN   p_T=4.2368e-03 ===
+model                    params          VRF        KL
+MLP hidden=4                 45        43.62    0.0026
+MLP hidden=6                 67        49.40    0.0021
+MLP hidden=8                 89        37.77    0.0017
+MLP hidden=12               133        52.68    0.0009
+MLP hidden=16               177        68.90    0.0002
+MLP hidden=24               265        38.10    0.0003
+hybrid nq3L2                 40        45.16    0.0089
+hybrid nq4L2                 53       151.36    0.0017
+hybrid nq4L3                 57         3.91    0.0097
+hybrid nq6L2                 79        28.46    0.0068
+  BEST MLP    hidden=16 seed=1 params=177 VRF=68.90 KL=0.0002
+  BEST HYBRID nq4L2 seed=0 params=53 VRF=151.36 KL=0.0017
+
+DONE

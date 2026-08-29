@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+noise.py: finite-shot and depolarising evaluation of the learned proposals.
+"""
 from __future__ import annotations
 import os, json
 import numpy as np
@@ -11,7 +15,7 @@ from hybrid import DressedCircuit, _z_masks
 from run_study import CFG, targets_from_h, g_from_probs, learning_error
 
 T, n = CFG["T"], CFG["n"]
-SHOTS = [100, 1000, 10_000, 100_000, None]   
+SHOTS = [100, 1000, 10_000, 100_000, None]      # None denotes exact readout
 DEPOL = [0.0, 0.01, 0.05]
 SEEDS = [0, 1, 2]
 

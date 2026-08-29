@@ -1,0 +1,97 @@
+exponent  hybrid_nq4  seed 0  VRF      69.69  KL 0.0105  (37s)
+exponent  hybrid_nq4  seed 1  VRF      12.85  KL 0.0165  (37s)
+exponent  hybrid_nq4  seed 2  VRF      36.67  KL 0.0151  (37s)
+exponent  mlp_w16     seed 0  VRF     235.41  KL 0.0030  (1s)
+exponent  mlp_w16     seed 1  VRF     683.79  KL 0.0007  (1s)
+exponent  mlp_w16     seed 2  VRF     471.45  KL 0.0008  (1s)
+exponent  born_sym_static    VRF     3.79  KL 0.0839  (53s)
+exponent  born_gen_static    VRF     0.00  KL 0.8767  (53s)
+{
+ "exponent": {
+  "p_T": 0.0008916671727213436,
+  "n_F": 15,
+  "gate_rowsum": 4.440892098500626e-16,
+  "gate_naive_reldev": 4.868048599100987e-16,
+  "tilt": {
+   "vrf": 4.44792947670959,
+   "nu": 0.8666666666666667
+  },
+  "hybrid_nq4": {
+   "vrf": [
+    69.6947539979896,
+    12.845273724752072,
+    36.66603531712508
+   ],
+   "median": 36.66603531712508,
+   "kl_median": 0.015088595648176063
+  },
+  "mlp_w16": {
+   "vrf": [
+    235.41431780973429,
+    683.7871453198757,
+    471.45335015180933
+   ],
+   "median": 471.45335015180933,
+   "kl_median": 0.0008266390574096613
+  },
+  "born_sym_static": {
+   "vrf": 3.7907716190298304,
+   "kl": 0.08385743143023679,
+   "params": 4
+  },
+  "born_gen_static": {
+   "vrf": 2.1157142058962125e-09,
+   "kl": 0.8766890702406158,
+   "params": 32
+  }
+ }
+}
+cascade   hybrid_nq4  seed 0  VRF      40.58  KL 0.0372  (37s)
+cascade   hybrid_nq4  seed 1  VRF      22.67  KL 0.0035  (37s)
+cascade   hybrid_nq4  seed 2  VRF      21.03  KL 0.0142  (37s)
+cascade   mlp_w16     seed 0  VRF      44.25  KL 0.0005  (1s)
+cascade   mlp_w16     seed 1  VRF      62.17  KL 0.0002  (1s)
+cascade   mlp_w16     seed 2  VRF      55.87  KL 0.0003  (1s)
+cascade   born_sym_static    VRF     0.92  KL 0.2529  (54s)
+cascade   born_gen_static    VRF     0.00  KL 1.0801  (54s)
+{
+ "cascade": {
+  "p_T": 0.002079144694428402,
+  "n_F": 15,
+  "gate_rowsum": 8.881784197001252e-16,
+  "gate_naive_reldev": 0.0,
+  "tilt": {
+   "vrf": 4.450161149894067,
+   "nu": 0.7666666666666666
+  },
+  "hybrid_nq4": {
+   "vrf": [
+    40.577812020851425,
+    22.66604148672695,
+    21.03437534226725
+   ],
+   "median": 22.66604148672695,
+   "kl_median": 0.014184867845071598
+  },
+  "mlp_w16": {
+   "vrf": [
+    44.24867289178265,
+    62.17342953549852,
+    55.870508631389264
+   ],
+   "median": 55.870508631389264,
+   "kl_median": 0.00033324247340136816
+  },
+  "born_sym_static": {
+   "vrf": 0.9225154168421414,
+   "kl": 0.2528817148069948,
+   "params": 4
+  },
+  "born_gen_static": {
+   "vrf": 5.7544085262615216e-05,
+   "kl": 1.080061279361858,
+   "params": 32
+  }
+ }
+}
+DONE

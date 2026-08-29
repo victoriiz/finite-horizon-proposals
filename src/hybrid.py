@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+"""
+hybrid.py: Dressed quantum circuit (hybrid classical-quantum regressor).
+"""
+
 from __future__ import annotations
 import numpy as np
 

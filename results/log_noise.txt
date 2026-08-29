@@ -1,0 +1,37 @@
+==============================================================================
+FINITE-SHOT AND DEPOLARISING EVALUATION
+  weighted structure, n=8, T=6, p_T=2.0791e-03, naive var=2.0748e-03
+  models trained under exact supervision, noise applied at readout only
+==============================================================================
+
+The classical regressor has no readout channel: its proposal is
+deterministic and therefore exact at every shot budget. We include
+it as a flat reference line.
+
+  classical MLP, exact readout, median over 3 seeds: VRF 57.4
+
+--- depolarising rate lambda = 0.0 ----------------------------------------
+     shots    hybrid VRF    Born VRF   hybrid / MLP
+       100         14.73        0.00         0.2566
+     1,000         22.53        0.00         0.3925
+    10,000         22.63        0.88         0.3942
+   100,000         22.80        0.92         0.3971
+     exact         23.15        0.91         0.4033
+
+--- depolarising rate lambda = 0.01 ----------------------------------------
+     shots    hybrid VRF    Born VRF   hybrid / MLP
+       100         17.68        0.00         0.3080
+     1,000         24.42        0.00         0.4253
+    10,000         22.77        0.95         0.3966
+   100,000         22.34        0.96         0.3891
+     exact         23.00        0.92         0.4007
+
+--- depolarising rate lambda = 0.05 ----------------------------------------
+     shots    hybrid VRF    Born VRF   hybrid / MLP
+       100         18.74        0.00         0.3264
+     1,000         18.57        0.00         0.3234
+    10,000         23.14        0.91         0.4031
+   100,000         22.17        0.92         0.3862
+     exact         22.24        0.93         0.3874
+
+wrote /home/claude/qht/results/results_noise.json

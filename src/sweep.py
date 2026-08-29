@@ -1,7 +1,13 @@
 import numpy as np, json, sys
-from src.qht import Chain, MLP
-from src.hybrid import DressedCircuit
-from src.run_study import CFG, targets_from_h, fit_scale_and_score, learning_error
+import os
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS = os.path.join(_ROOT, "results")
+FIGURES = os.path.join(_ROOT, "figures")
+os.makedirs(RESULTS, exist_ok=True); os.makedirs(FIGURES, exist_ok=True)
+
+from qht import Chain, MLP
+from hybrid import DressedCircuit
+from run_study import CFG, targets_from_h, fit_scale_and_score, learning_error
 
 T=CFG["T"]; n=CFG["n"]
 models = {
@@ -39,5 +45,5 @@ for nm,ch in models.items():
     print(f"  BEST MLP    hidden={bm[1]} seed={bm[2]} params={bm[3]} VRF={bm[4]:,.2f} KL={bm[5]:.4f}", flush=True)
     print(f"  BEST HYBRID {bh[1]} seed={bh[2]} params={bh[3]} VRF={bh[4]:,.2f} KL={bh[5]:.4f}", flush=True)
     out[nm]=dict(mlp=rows,hyb=hrows,p_T=p,var_naive=vn)
-json.dump(out,open("results_sweep.json","w"),indent=2,default=float)
+json.dump(out,open(os.path.join(RESULTS,"results_sweep.json"),"w"),indent=2,default=float)
 print("\nDONE", flush=True)

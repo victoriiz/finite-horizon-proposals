@@ -3,16 +3,16 @@
 MODEL: WEIGHTED (mission-time reliability model)
   n=8, 256 states, T=6, gamma=0.3, eta=0.5
   weighted: c=[8, 8, 8, 8, 4, 4, 4, 4], C_min=12.0
-  |F| = 15 states,  p_T = 8.916672e-04  (1 in 1,121)
+  |F| = 15 states,  p_T = 2.079145e-03  (1 in 481)
 ========================================================================================
 
 STEP 0 - CORRECTNESS GATES
   tests: kernel, backward DP and variance recursion agree before any
   learning happens. Nothing downstream is trusted until they do.
 ----------------------------------------------------------------------------------------
-  kernel rows sum to 1       max dev 4.44e-16
-  naive variance == p(1-p)   rel dev 4.87e-16
-  h-transform variance == 0  value   6.353e-22
+  kernel rows sum to 1       max dev 8.88e-16
+  naive variance == p(1-p)   rel dev 0.00e+00
+  h-transform variance == 0  value   0.000e+00
   ALL GATES PASS
 
 STEP 3 - TARGET-CLASS CHARACTERISATION
@@ -30,7 +30,7 @@ STEP 2 - STRONG CLASSICAL BASELINE (odds-ratio tilt family)
   member we happened to train. This is the comparator the quantum
   rare-event literature usually omits.
 ----------------------------------------------------------------------------------------
-  optimum nu=0.867   var 2.003e-04   VRF 4.45x   (2s)
+  optimum nu=0.767   var 4.662e-04   VRF 4.45x   (11s)
 
 STEP 4 - BORN-MACHINE CIRCUITS (generative)
   tests: (a) can a circuit represent h_s; (b) how should it read the
@@ -38,12 +38,12 @@ STEP 4 - BORN-MACHINE CIRCUITS (generative)
   each horizon its own parameter block, REUPLOAD injects s as a shared
   rotation; (c) symmetric (tied angles) vs generic (per-qubit angles).
 ----------------------------------------------------------------------------------------
-  VQC gen static         params   32  var 4.211e+05  VRF        0.00x  KL 0.8767  (40s)
-  VQC gen reupload       params   64  var 2.104e+02  VRF        0.00x  KL 2.3333  (39s)
-  VQC gen per_s          params  224  var 3.136e+02  VRF        0.00x  KL 1.0466  (39s)
-  VQC sym static         params    4  var 2.350e-04  VRF        3.79x  KL 0.0839  (40s)
-  VQC sym reupload       params    8  var 6.218e+03  VRF        0.00x  KL 1.4602  (39s)
-  VQC sym per_s          params   28  var 5.444e-02  VRF        0.02x  KL 0.6171  (40s)
+  VQC gen static         params   32  var 3.606e+01  VRF        0.00x  KL 1.0801  (162s)
+  VQC gen reupload       params   64  var 1.084e+04  VRF        0.00x  KL 2.1627  (166s)
+  VQC gen per_s          params  224  var 1.932e+02  VRF        0.00x  KL 1.0270  (166s)
+  VQC sym static         params    4  var 2.249e-03  VRF        0.92x  KL 0.2529  (163s)
+  VQC sym reupload       params    8  var 1.077e+04  VRF        0.00x  KL 1.4774  (162s)
+  VQC sym per_s          params   28  var 3.961e-03  VRF        0.52x  KL 0.5296  (159s)
 
 STEP 5 - HYBRID DRESSED CIRCUIT (Mari et al., Quantum 4:340, 2020)
   tests: a quantum middle, architecture-matched to the MLP. The Born
@@ -52,14 +52,14 @@ STEP 5 - HYBRID DRESSED CIRCUIT (Mari et al., Quantum 4:340, 2020)
   This is the same regressor form with a circuit inside:
   W_pre -> angle encoding -> circuit -> <Z> -> W_post -> softmax.
 ----------------------------------------------------------------------------------------
-  n_q=4 L=2  params   53  var 1.278e-05  VRF       69.69x  KL 0.0105  (27s)
+  n_q=4 L=2  params   53  var 5.113e-05  VRF       40.58x  KL 0.0372  (110s)
 
 STEP 6 - CLASSICAL MLP CONTROL (matched parameter budget)
   tests: model class with everything else held fixed -- same inputs,
   same exact targets, same forward-KL loss, same Adam settings and a
   comparable parameter count.
 ----------------------------------------------------------------------------------------
-  hidden=5  params   56  var 1.453e-05  VRF       61.33x  KL 0.0008
+  hidden=5  params   56  var 3.532e-05  VRF       58.75x  KL 0.0002
 
 ----------------------------------------------------------------------------------------
 SUMMARY - WEIGHTED (mission-time reliability model)   (VRF vs naive MC; normVRF = VRF * p_T)
@@ -67,23 +67,23 @@ SUMMARY - WEIGHTED (mission-time reliability model)   (VRF vs naive MC; normVRF 
 method                                kind        params           VRF   normVRF   KL to h
 ----------------------------------------------------------------------------------------
 exact h-transform (ceiling)           exact           --      infinite        --    0.0000
-hybrid dressed circuit                hybrid          53         69.69     0.062    0.0105
-classical MLP                         classical       56         61.33     0.055    0.0008
-classical tilt (exact family optimum) classical        1          4.45     0.004       ---
-VQC sym static                        quantum          4          3.79     0.003    0.0839
-VQC sym per_s                         quantum         28          0.02     0.000    0.6171
-VQC gen reupload                      quantum         64          0.00     0.000    2.3333
-VQC gen per_s                         quantum        224          0.00     0.000    1.0466
-VQC sym reupload                      quantum          8          0.00     0.000    1.4602
-VQC gen static                        quantum         32          0.00     0.000    0.8767
+classical MLP                         classical       56         58.75     0.122    0.0002
+hybrid dressed circuit                hybrid          53         40.58     0.084    0.0372
+classical tilt (exact family optimum) classical        1          4.45     0.009       ---
+VQC sym static                        quantum          4          0.92     0.002    0.2529
+VQC sym per_s                         quantum         28          0.52     0.001    0.5296
+VQC gen static                        quantum         32          0.00     0.000    1.0801
+VQC gen per_s                         quantum        224          0.00     0.000    1.0270
+VQC sym reupload                      quantum          8          0.00     0.000    1.4774
+VQC gen reupload                      quantum         64          0.00     0.000    2.1627
 ----------------------------------------------------------------------------------------
-naive MC variance 8.909e-04,  p_T 8.9167e-04,  |F| 15
+naive MC variance 2.075e-03,  p_T 2.0791e-03,  |F| 15
 
 ========================================================================================
 MODEL: K-OUT-OF-N (symmetric control, not the applied model)
   n=8, 256 states, T=6, gamma=0.3, eta=0.5
   k-out-of-n: k=4
-  |F| = 93 states,  p_T = 1.302353e-03  (1 in 768)
+  |F| = 93 states,  p_T = 4.236761e-03  (1 in 236)
 ========================================================================================
 
 STEP 0 - CORRECTNESS GATES
@@ -91,8 +91,8 @@ STEP 0 - CORRECTNESS GATES
   learning happens. Nothing downstream is trusted until they do.
 ----------------------------------------------------------------------------------------
   kernel rows sum to 1       max dev 4.44e-16
-  naive variance == p(1-p)   rel dev 3.33e-16
-  h-transform variance == 0  value   0.000e+00
+  naive variance == p(1-p)   rel dev 2.06e-16
+  h-transform variance == 0  value   2.711e-20
   ALL GATES PASS
 
 STEP 3 - TARGET-CLASS CHARACTERISATION
@@ -110,7 +110,7 @@ STEP 2 - STRONG CLASSICAL BASELINE (odds-ratio tilt family)
   member we happened to train. This is the comparator the quantum
   rare-event literature usually omits.
 ----------------------------------------------------------------------------------------
-  optimum nu=0.800   var 3.388e-04   VRF 3.84x   (2s)
+  optimum nu=0.800   var 9.208e-04   VRF 4.58x   (8s)
 
 STEP 4 - BORN-MACHINE CIRCUITS (generative)
   tests: (a) can a circuit represent h_s; (b) how should it read the
@@ -118,12 +118,12 @@ STEP 4 - BORN-MACHINE CIRCUITS (generative)
   each horizon its own parameter block, REUPLOAD injects s as a shared
   rotation; (c) symmetric (tied angles) vs generic (per-qubit angles).
 ----------------------------------------------------------------------------------------
-  VQC gen static         params   32  var 5.005e+00  VRF        0.00x  KL 0.5354  (40s)
-  VQC gen reupload       params   64  var 1.597e+02  VRF        0.00x  KL 1.8233  (39s)
-  VQC gen per_s          params  224  var 5.799e-01  VRF        0.00x  KL 0.8773  (40s)
-  VQC sym static         params    4  var 1.240e-03  VRF        1.05x  KL 0.2275  (40s)
-  VQC sym reupload       params    8  var 9.647e+01  VRF        0.00x  KL 0.9615  (40s)
-  VQC sym per_s          params   28  var 1.023e-02  VRF        0.13x  KL 0.3900  (40s)
+  VQC gen static         params   32  var 1.632e+02  VRF        0.00x  KL 0.9933  (161s)
+  VQC gen reupload       params   64  var 8.830e+04  VRF        0.00x  KL 1.9196  (168s)
+  VQC gen per_s          params  224  var 2.238e+01  VRF        0.00x  KL 0.8569  (164s)
+  VQC sym static         params    4  var 4.781e-03  VRF        0.88x  KL 0.2423  (171s)
+  VQC sym reupload       params    8  var 3.075e-01  VRF        0.01x  KL 0.6281  (169s)
+  VQC sym per_s          params   28  var 1.805e-01  VRF        0.02x  KL 0.4666  (173s)
 
 STEP 5 - HYBRID DRESSED CIRCUIT (Mari et al., Quantum 4:340, 2020)
   tests: a quantum middle, architecture-matched to the MLP. The Born
@@ -132,14 +132,14 @@ STEP 5 - HYBRID DRESSED CIRCUIT (Mari et al., Quantum 4:340, 2020)
   This is the same regressor form with a circuit inside:
   W_pre -> angle encoding -> circuit -> <Z> -> W_post -> softmax.
 ----------------------------------------------------------------------------------------
-  n_q=4 L=2  params   53  var 3.919e-06  VRF      331.92x  KL 0.0043  (27s)
+  n_q=4 L=2  params   53  var 2.787e-05  VRF      151.36x  KL 0.0017  (117s)
 
 STEP 6 - CLASSICAL MLP CONTROL (matched parameter budget)
   tests: model class with everything else held fixed -- same inputs,
   same exact targets, same forward-KL loss, same Adam settings and a
   comparable parameter count.
 ----------------------------------------------------------------------------------------
-  hidden=5  params   56  var 1.131e-03  VRF        1.15x  KL 0.1126
+  hidden=5  params   56  var 3.163e-03  VRF        1.33x  KL 0.1132
 
 ----------------------------------------------------------------------------------------
 SUMMARY - K-OUT-OF-N (symmetric control, not the applied model)   (VRF vs naive MC; normVRF = VRF * p_T)
@@ -147,16 +147,16 @@ SUMMARY - K-OUT-OF-N (symmetric control, not the applied model)   (VRF vs naive 
 method                                kind        params           VRF   normVRF   KL to h
 ----------------------------------------------------------------------------------------
 exact h-transform (ceiling)           exact           --      infinite        --    0.0000
-hybrid dressed circuit                hybrid          53        331.92     0.432    0.0043
-classical tilt (exact family optimum) classical        1          3.84     0.005       ---
-classical MLP                         classical       56          1.15     0.001    0.1126
-VQC sym static                        quantum          4          1.05     0.001    0.2275
-VQC sym per_s                         quantum         28          0.13     0.000    0.3900
-VQC gen per_s                         quantum        224          0.00     0.000    0.8773
-VQC gen static                        quantum         32          0.00     0.000    0.5354
-VQC sym reupload                      quantum          8          0.00     0.000    0.9615
-VQC gen reupload                      quantum         64          0.00     0.000    1.8233
+hybrid dressed circuit                hybrid          53        151.36     0.641    0.0017
+classical tilt (exact family optimum) classical        1          4.58     0.019       ---
+classical MLP                         classical       56          1.33     0.006    0.1132
+VQC sym static                        quantum          4          0.88     0.004    0.2423
+VQC sym per_s                         quantum         28          0.02     0.000    0.4666
+VQC sym reupload                      quantum          8          0.01     0.000    0.6281
+VQC gen per_s                         quantum        224          0.00     0.000    0.8569
+VQC gen static                        quantum         32          0.00     0.000    0.9933
+VQC gen reupload                      quantum         64          0.00     0.000    1.9196
 ----------------------------------------------------------------------------------------
-naive MC variance 1.301e-03,  p_T 1.3024e-03,  |F| 93
+naive MC variance 4.219e-03,  p_T 4.2368e-03,  |F| 93
 
-wrote results_main.json
+wrote /home/claude/qht/results/results_main.json

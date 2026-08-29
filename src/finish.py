@@ -1,10 +1,20 @@
+"""
+finish.py: completes the two runs the conclusion rests on.
+Writes incrementally so a killed process still leaves usable results.
+"""
 import numpy as np, json, os, sys
-from src.qht import Chain, MLP
-from src.hybrid import DressedCircuit
-from src.run_study import CFG, targets_from_h, fit_scale_and_score, learning_error
+import os
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RESULTS = os.path.join(_ROOT, "results")
+FIGURES = os.path.join(_ROOT, "figures")
+os.makedirs(RESULTS, exist_ok=True); os.makedirs(FIGURES, exist_ok=True)
+
+from qht import Chain, MLP
+from hybrid import DressedCircuit
+from run_study import CFG, targets_from_h, fit_scale_and_score, learning_error
 
 T, n = CFG["T"], CFG["n"]
-OUT = "results_final.json"
+OUT = os.path.join(RESULTS, "results_final.json")
 res = json.load(open(OUT)) if os.path.exists(OUT) else {"seeds": {}, "rarity": {}}
 
 def save():
