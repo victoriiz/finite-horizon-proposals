@@ -1,0 +1,18 @@
+(A) SEED STABILITY -- 8 seeds per configuration
+  WEIGHTED MLP 6        params   67  median     123.9  IQR [77.4, 274.9]  range 71.0..524.0
+  WEIGHTED MLP 16       params  177  median     243.4  IQR [147.8, 476.9]  range 86.8..683.8
+  WEIGHTED HYB (4, 2)   params   53  median      69.8  IQR [54.2, 90.0]  range 12.8..653.1
+  WEIGHTED HYB (6, 2)   params   79  median     125.7  IQR [79.9, 224.6]  range 0.0..382.6
+  KOFN     MLP 6        params   67  median     638.6  IQR [189.1, 967.0]  range 1.0..1,108.2
+  KOFN     MLP 16       params  177  median     401.9  IQR [331.1, 499.9]  range 144.1..793.0
+  KOFN     HYB (4, 2)   params   53  median      38.1  IQR [12.2, 155.5]  range 6.4..374.2
+  KOFN     HYB (6, 2)   params   79  median      67.4  IQR [35.0, 110.4]  range 9.3..185.2
+
+(B) RARITY REGIME -- gamma retuned per target p_T (WEIGHTED)
+  p_T=   1e-02  gamma=0.4548  MLP median      29.9   hybrid median      13.6
+  p_T=   1e-03  gamma=0.3040  MLP median     333.9   hybrid median      54.0
+  p_T=   1e-04  gamma=0.2362  MLP median   1,727.1   hybrid median      54.9
+  p_T=   1e-06  gamma=0.1687  MLP median  18,242.7   hybrid median     822.6
+  p_T=   1e-08  gamma=0.1203  MLP median 1,125,887.1   hybrid median   6,091.2
+
+DONE
