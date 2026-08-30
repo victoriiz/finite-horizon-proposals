@@ -38,8 +38,6 @@ def fig_rarity():
     a = ax[0]
     a.loglog(p, m, "-o", color=BLUE,   lw=2, ms=5, label="classical MLP", zorder=3)
     a.loglog(p, h, "-s", color=ORANGE, lw=2, ms=5, label="hybrid circuit", zorder=3)
-    # p is sorted ASCENDING, so index 0 is the rarest point and, after the axis
-    # inversion, sits at the right edge. Label there, right-aligned.
     a.annotate("classical MLP", (p[0], m[0]), textcoords="offset points",
                xytext=(-6, 5), color=BLUE, fontsize=8, ha="right")
     a.annotate("hybrid", (p[0], h[0]), textcoords="offset points",
@@ -134,8 +132,6 @@ def fig_capacity():
                 groups.setdefault(r[3], []).append(r[4])
             xs = sorted(groups)
             ys = [max(groups[x]) for x in xs]
-            # MARKERS ONLY, no connecting line: with 2 seeds per point the
-            # apparent trend is not distinguishable from seed noise (Fig. 2).
             a.plot(xs, ys, ls="none", marker=mk, color=col, ms=6,
                    markeredgecolor="white", markeredgewidth=0.5,
                    label=lab, zorder=3)
@@ -197,8 +193,8 @@ def fig_noise():
     ax.set_ylim(1.0e-2, 4e3)
     ax.set_xlim(0.8, 5.4)
     ax.set_xticks(xpos); ax.set_xticklabels(xlab)
-    ax.set_xlabel("measurement shots used to reconstruct the proposal")
-    ax.set_ylabel("variance reduction factor")
+    ax.set_xlabel("Measurement Shots Used to Reconstruct the Proposal")
+    ax.set_ylabel("Variance Reduction Factor")
     ax.grid(True, axis="y", which="major", color=GRID, lw=0.5, zorder=0)
     ax.set_axisbelow(True)
     ax.legend(frameon=False, fontsize=7.5, loc="lower right", ncol=1,
