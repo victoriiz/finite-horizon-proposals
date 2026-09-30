@@ -24,8 +24,108 @@ plt.rcParams.update({
 
 fin = json.load(open(os.path.join(RESULTS,"results_final.json")))
 swp = json.load(open(os.path.join(RESULTS,"results_sweep.json")))
+main = json.load(open(os.path.join(RESULTS, "results_main.json")))
 
+# ---------------------------------------------------------------- Figure 0
+# ---------------------------------------------------------------- Figure 0
+def fig_ceiling():
+    weighted = main["models"]["weighted"]
+    var_naive = weighted["var_naive"]
 
+    # Classical tilt from the original reference experiment.
+    tilt_row = next(
+        r for r in weighted["results"]
+        if r["method"].startswith("classical tilt")
+    )
+    tilt_vrf = var_naive / tilt_row["var"]
+
+    # Best WEIGHTED Born-machine run across all 8-seed configurations.
+    born_vrfs = []
+    for key, row in fin["born"].items():
+        if key.startswith("WEIGHTED|"):
+            born_vrfs.extend(row["vrf"])
+    born_best = max(born_vrfs)
+
+    # Regressive medians from the repeated-seed study.
+    hybrid_med = np.median(fin["seeds"]["WEIGHTED|HYB|(4, 2)"]["vrf"])
+    mlp_med = np.median(fin["seeds"]["WEIGHTED|MLP|16"]["vrf"])
+
+    labels = [
+        "naive Monte Carlo",
+        "classical tilt",
+        "best Born-machine run",
+        "hybrid dressed circuit",
+        "classical MLP",
+    ]
+    values = [1.0, tilt_vrf, born_best, hybrid_med, mlp_med]
+    colors = [MUTED, MUTED, INK, ORANGE, BLUE]
+
+    y = np.arange(len(labels))
+
+    fig, ax = plt.subplots(figsize=(6.6, 2.6))
+
+    # Draw bars from VRF = 1 onward; naive MC is marked separately.
+    for yi, lab, val, col in zip(y, labels, values, colors):
+        if val > 1.0:
+            ax.barh(
+                yi,
+                val - 1.0,
+                left=1.0,
+                height=0.58,
+                color=col,
+                alpha=0.85 if lab != "classical tilt" else 0.45,
+                edgecolor=col,
+                linewidth=0.8,
+                zorder=3,
+            )
+        ax.scatter([val], [yi], s=22, color=col, zorder=4)
+
+    ax.set_xscale("log")
+    ax.set_xlim(0.7, 100)
+    ax.set_yticks(y)
+    ax.set_yticklabels(labels, fontsize=8)
+    ax.invert_yaxis()
+
+    ax.set_xlabel(
+        r"variance reduction factor over naive Monte Carlo, WEIGHTED"
+    )
+
+    ax.axvline(1.0, color=MUTED, lw=0.8, ls=(0, (4, 3)), zorder=1)
+    ax.grid(True, axis="x", which="major", color=GRID, lw=0.5, zorder=0)
+    ax.set_axisbelow(True)
+
+    # Numeric annotations at bar ends.
+    for yi, val, col in zip(y, values, colors):
+        txt = f"{val:.2f}×" if val < 10 else f"{val:.1f}×"
+        x_text = val * 1.05 if val > 1 else 1.08
+        ax.text(
+            x_text,
+            yi,
+            txt,
+            va="center",
+            ha="left",
+            fontsize=8,
+            color=col,
+        )
+
+    # Infinite reference annotated separately.
+    ax.text(
+        0.995,
+        1.04,
+        r"exact $h$-transform: zero variance (VRF $\to \infty$)",
+        transform=ax.transAxes,
+        ha="right",
+        va="bottom",
+        fontsize=8,
+        color=MUTED,
+    )
+
+    fig.tight_layout()
+    fig.savefig(
+        os.path.join(FIGURES, "fig_ceiling.pdf"),
+        bbox_inches="tight"
+    )
+    print(f"wrote {FIGURES}/fig_ceiling.pdf")
 # ---------------------------------------------------------------- Figure 1
 def fig_rarity():
     ks = sorted(fin["rarity"], key=lambda k: float(k))
@@ -58,8 +158,12 @@ def fig_rarity():
                    xytext=(0, 7), ha="center", fontsize=7.5, color=INK)
     b.set_xlabel(r"failure probability $p_T$")
     b.set_ylabel("classical / hybrid")
-    b.set_title("(b) the classical margin widens with rarity", fontsize=9,
-                loc="left", pad=8)
+    b.set_title(
+        r"(b) classical / hybrid ratio across the $\gamma$-retuned sweep",
+        fontsize=9,
+        loc="left",
+        pad=8
+    )
     b.invert_xaxis()
     b.set_ylim(1.2, 900)
     b.grid(True, which="major", color=GRID, lw=0.5, zorder=0)
@@ -205,4 +309,4 @@ def fig_noise():
 
 
 if __name__ == "__main__":
-    fig_rarity(); fig_seeds(); fig_capacity(); fig_noise()
+    fig_ceiling(); fig_rarity(); fig_seeds(); fig_capacity(); fig_noise()

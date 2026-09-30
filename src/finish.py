@@ -9,13 +9,14 @@ RESULTS = os.path.join(_ROOT, "results")
 FIGURES = os.path.join(_ROOT, "figures")
 os.makedirs(RESULTS, exist_ok=True); os.makedirs(FIGURES, exist_ok=True)
 
-from qht import Chain, MLP
+from qht import Chain, MLP, VQCProposal
 from hybrid import DressedCircuit
 from run_study import CFG, targets_from_h, fit_scale_and_score, learning_error
 
 T, n = CFG["T"], CFG["n"]
 OUT = os.path.join(RESULTS, "results_final.json")
 res = json.load(open(OUT)) if os.path.exists(OUT) else {"seeds": {}, "rarity": {}}
+res.setdefault("born", {})
 
 def save():
     json.dump(res, open(OUT, "w"), indent=2, default=float)
@@ -45,6 +46,30 @@ def run_hyb(ch, tg, h, X, nq, L, sd):
     vn = float(h[T, ch.x0]) * (1 - float(h[T, ch.x0]))
     return vn / fit_scale_and_score(ch, f, T, "h")["var"], learning_error(ch, f, h, T), hy.n_params()
 
+def run_vqc(ch, tg, h, enc, sym, sd):
+    m = VQCProposal(
+        n, T,
+        L=CFG["vqc_layers"],
+        encoding=enc,
+        seed=sd,
+        sym=sym
+    )
+    m.fit(
+        tg,
+        steps=CFG["vqc_steps"],
+        lr=CFG["vqc_lr"]
+    )
+
+    f = lambda s: m.probs(max(s, 1))
+
+    p = float(h[T, ch.x0])
+    vn = p * (1 - p)
+
+    score = fit_scale_and_score(ch, f, T, "vqc")
+    kl = learning_error(ch, f, h, T)
+
+    return vn / score["var"], kl, m.n_params()
+
 # ---------- (A) finish the seed grid ----------
 NSEED = 8
 GRID = [("WEIGHTED","MLP",6), ("WEIGHTED","MLP",16),
@@ -71,8 +96,60 @@ for kind, fam, spec in GRID:
           f"{np.percentile(a,75):,.1f}]  range {a.min():,.1f}..{a.max():,.1f}", flush=True)
     save()
 
-# ---------- (B) rarity regime ----------
-print("\n(B) RARITY REGIME -- gamma retuned per target p_T (WEIGHTED)", flush=True)
+# ---------- (B) Born-machine seed stability ----------
+print("\n(B) BORN SEED STABILITY -- 8 seeds per configuration", flush=True)
+
+BORN_GRID = [
+    (kind, enc, sym)
+    for kind in ("WEIGHTED", "KOFN")
+    for enc in ("static", "reupload", "per_s")
+    for sym in (False, True)
+]
+
+for kind, enc, sym in BORN_GRID:
+    key = f"{kind}|{enc}|{'sym' if sym else 'gen'}"
+
+    if key in res["born"]:
+        print(f"  [cached] {key}", flush=True)
+        continue
+
+    ch = build(kind)
+    h = ch.exact_h(T)
+    tg = targets_from_h(ch, h, T)
+
+    vrfs, kls, npar = [], [], None
+
+    for sd in range(NSEED):
+        v, k, npar = run_vqc(ch, tg, h, enc, sym, sd)
+        vrfs.append(v)
+        kls.append(k)
+        print(
+            f"    {key} seed={sd}: VRF={v:.4g}, KL={k:.4g}",
+            flush=True
+        )
+
+    res["born"][key] = {
+        "params": npar,
+        "vrf": vrfs,
+        "kl": kls,
+        "p_T": float(h[T, ch.x0]),
+    }
+
+    a = np.asarray(vrfs)
+    b = np.asarray(kls)
+
+    print(
+        f"  {key:<28} params {npar:>4} "
+        f"VRF median {np.median(a):.4g} "
+        f"IQR [{np.percentile(a,25):.4g}, {np.percentile(a,75):.4g}] "
+        f"KL median {np.median(b):.4g}",
+        flush=True
+    )
+
+    save()
+
+# ---------- (C) rarity regime ----------
+print("\n(C) RARITY REGIME -- gamma retuned per target p_T (WEIGHTED)", flush=True)
 def solve_gamma(target, lo=1e-4, hi=3.0):
     f = lambda g: build("WEIGHTED", g).p_T(T)
     if not (f(lo) <= target <= f(hi)): return None
