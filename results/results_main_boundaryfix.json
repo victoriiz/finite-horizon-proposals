@@ -1,0 +1,205 @@
+{
+  "config": {
+    "n": 8,
+    "T": 6,
+    "a0": 0.001715,
+    "b0": 0.284,
+    "gamma": 0.3,
+    "eta": 0.5,
+    "weighted_caps": [
+      8.0,
+      8.0,
+      8.0,
+      8.0,
+      4.0,
+      4.0,
+      4.0,
+      4.0
+    ],
+    "weighted_C_min": 12.0,
+    "kofn_k": 4,
+    "defensive_eps": 0.001,
+    "scale_grid": 31,
+    "scale_lo": 0.001,
+    "scale_hi": 10000.0,
+    "tilt_grid": 241,
+    "tilt_lo": 0.0,
+    "tilt_hi": 8.0,
+    "vqc_layers": 4,
+    "vqc_steps": 400,
+    "vqc_lr": 0.25,
+    "vqc_seed": 0,
+    "hyb_qubits": 4,
+    "hyb_layers": 2,
+    "hyb_scale": 3.141592653589793,
+    "hyb_steps": 300,
+    "hyb_lr": 0.05,
+    "hyb_seed": 0,
+    "mlp_steps": 1200,
+    "mlp_lr": 0.05,
+    "mlp_seed": 0,
+    "adam_b1": 0.9,
+    "adam_b2": 0.999,
+    "adam_eps": 1e-08
+  },
+  "models": {
+    "weighted": {
+      "name": "WEIGHTED (mission-time reliability model)",
+      "p_T": 0.0020791446944284017,
+      "var_naive": 0.002074821851768032,
+      "distinct_values": [
+        21,
+        21,
+        21,
+        21,
+        22,
+        21
+      ],
+      "n_F": 15,
+      "results": [
+        {
+          "method": "classical tilt (best grid value)",
+          "var": 0.000466235217530813,
+          "params": 1,
+          "klerr": NaN,
+          "kind": "classical"
+        },
+        {
+          "method": "VQC gen static",
+          "var": 0.053794900504189565,
+          "params": 32,
+          "klerr": 0.7944044317082749,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC gen reupload",
+          "var": 6115.663920856492,
+          "params": 64,
+          "klerr": 1.8720505123911422,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC gen per_s",
+          "var": 586.4084667234101,
+          "params": 160,
+          "klerr": 1.2598447992355908,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym static",
+          "var": 0.0005303856118809274,
+          "params": 4,
+          "klerr": 0.1445121040069608,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym reupload",
+          "var": 81.80111563039863,
+          "params": 8,
+          "klerr": 1.2359193434493758,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym per_s",
+          "var": 0.27103802291347434,
+          "params": 20,
+          "klerr": 0.381720184007429,
+          "kind": "quantum"
+        },
+        {
+          "method": "hybrid dressed circuit",
+          "var": 0.00025886416486952074,
+          "params": 53,
+          "klerr": 0.020609377755816373,
+          "kind": "hybrid"
+        },
+        {
+          "method": "classical MLP",
+          "var": 2.0587871390468386e-05,
+          "params": 56,
+          "klerr": 0.00023799648809520244,
+          "kind": "classical"
+        }
+      ]
+    },
+    "kofn": {
+      "name": "K-OUT-OF-N (symmetric control, not the applied model)",
+      "p_T": 0.004236761311599033,
+      "var_naive": 0.004218811165187571,
+      "distinct_values": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ],
+      "n_F": 93,
+      "results": [
+        {
+          "method": "classical tilt (best grid value)",
+          "var": 0.0009207835875753587,
+          "params": 1,
+          "klerr": NaN,
+          "kind": "classical"
+        },
+        {
+          "method": "VQC gen static",
+          "var": 0.07649865901120402,
+          "params": 32,
+          "klerr": 0.5641740568422013,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC gen reupload",
+          "var": 806.8640247535487,
+          "params": 64,
+          "klerr": 1.5287311540546131,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC gen per_s",
+          "var": 256.2531427436758,
+          "params": 160,
+          "klerr": 0.894421705485464,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym static",
+          "var": 1996.6831588986493,
+          "params": 4,
+          "klerr": 0.9632579781510806,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym reupload",
+          "var": 1.6564499626522466,
+          "params": 8,
+          "klerr": 0.8555304453161149,
+          "kind": "quantum"
+        },
+        {
+          "method": "VQC sym per_s",
+          "var": 0.15715392560717484,
+          "params": 20,
+          "klerr": 0.49009186132525356,
+          "kind": "quantum"
+        },
+        {
+          "method": "hybrid dressed circuit",
+          "var": 1.4062284625588911e-05,
+          "params": 53,
+          "klerr": 0.001232273585175461,
+          "kind": "hybrid"
+        },
+        {
+          "method": "classical MLP",
+          "var": 0.0024395284402938928,
+          "params": 56,
+          "klerr": 0.12861437809410065,
+          "kind": "classical"
+        }
+      ]
+    }
+  }
+}
